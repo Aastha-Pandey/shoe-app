@@ -1,23 +1,54 @@
 import { shoes } from '../database/mockdata';
 
-export const getAllShoes = () => {
-  return shoes;
+export const getShoes = (query = 'all') => {
+  if (query === 'all') {
+    return shoes;
+  }
+  if (query === 'high') {
+    let result = [...shoes].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    return result;
+  }
+  if (query === 'low') {
+    let result = [...shoes].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    return result;
+  }
 };
 
-export const getShoesByLowToHigh = () => {
-  let result = shoes.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+export const getShoesByRange = (min, max) => {
+  return [...shoes].filter((item) => {
+    if (item.price >= min && item.price <= max) {
+      return item;
+    }
+  });
+};
+
+export const getShoesBySize = (sizes) => {
+  let numericSize = sizes.map((s) => parseInt(s));
+  let result = [...shoes].filter((shoe) => {
+    if (numericSize.some((i) => shoe.sizes.includes(i))) {
+      return shoe;
+    }
+  });
+
   return result;
 };
 
-export const getShoesByHighToLow = () => {
-  let result = shoes.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+export const getShoesByCategory = (categories) => {
+  let result = [...shoes].filter((shoe) => {
+    if (categories.includes(shoe.category)) {
+      return shoe;
+    }
+  });
   return result;
 };
 
-export const getShoesByCategory = () => {
-  return shoes;
+export const getCategory = () => {
+  let array = [];
+  shoes.map((item) => array.push(item.category));
+  let unique = [...new Set(array)];
+  return unique;
 };
 
-export const getShoesBySize = () => {
-  return shoes;
+export const getSizes = () => {
+  return [3, 4, 5, 6, 7, 8, 9, 10];
 };

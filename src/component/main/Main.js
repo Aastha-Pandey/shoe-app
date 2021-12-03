@@ -2,19 +2,18 @@ import Filter from '../side/Filter';
 import Navbar from '../header/Navbar';
 import Product from './Product';
 import { useEffect, useState } from 'react';
-import { getAllShoes } from '../../services/apiservice';
+import { getShoes } from '../../services/apiservice';
 
 const Main = () => {
+  const [query, setQuery] = useState('all');
   const [products, setProducts] = useState([]);
-
   useEffect(() => {
-    let data = getAllShoes();
+    let data = getShoes(query);
     setProducts(data);
-  }, []);
+  }, [query]);
 
   return (
     <>
-      {' '}
       <div
         style={{
           backgroundColor: 'rgba(249, 250, 251, 1)',
@@ -42,8 +41,8 @@ const Main = () => {
               height: '100%',
             }}
           >
-            <Filter products={products} />
-            <Product products={products} setProducts={setProducts} />
+            <Filter setProducts={(product) => setProducts(product)} />
+            <Product products={products} setQuery={(query) => setQuery(query)} />
           </div>
         </div>
       </div>

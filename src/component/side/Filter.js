@@ -1,11 +1,30 @@
 import { useEffect, useState } from 'react';
+import {
+  getCategory,
+  getShoesByCategory,
+  getShoesByRange,
+  getShoesBySize,
+  getSizes,
+} from '../../services/apiservice';
 
-const Filter = ({ products }) => {
-  const [shoeCategory, setShoeCategory] = useState([]);
+const Filter = ({ setProducts }) => {
+  const [sizes, setSizes] = useState([]);
+  const [checked, setChecked] = useState(new Array(getCategory().length).fill(false));
+  const [category, setCategory] = useState([]);
+  const [range, setRange] = useState('900');
+  useEffect(() => {
+    if (category.length !== 0) {
+      let data = getShoesByCategory(category);
+      setProducts(data);
+    }
+  }, [category]);
 
   useEffect(() => {
-    products.map((product) => setShoeCategory((prevState) => [...prevState, product.category]));
-  }, [products]);
+    if (sizes.length !== 0) {
+      let data = getShoesBySize(sizes);
+      setProducts(data);
+    }
+  }, [sizes]);
 
   return (
     <>
@@ -47,8 +66,7 @@ const Filter = ({ products }) => {
               paddingLeft: '2.5rem',
             }}
           >
-            {' '}
-            {shoeCategory.map((item) => (
+            {getCategory().map((item, index) => (
               <label
                 style={{
                   color: 'rgba(107, 114, 128, 1)',
@@ -58,6 +76,17 @@ const Filter = ({ products }) => {
                 }}
               >
                 <input
+                  value={item}
+                  onChange={(event) => {
+                    event.persist();
+                    let result = checked.map((item, i) => (i === index ? !item : item));
+                    setChecked(result);
+
+                    if (result[index]) {
+                      setCategory((category) => [...category, event.target.value]);
+                    }
+                  }}
+                  checked={checked[index]}
                   style={{
                     margin: '0.5rem',
                   }}
@@ -89,7 +118,17 @@ const Filter = ({ products }) => {
             Price range
           </h2>
 
-          <input type='range' />
+          <input
+            type='range'
+            min='300'
+            max='900'
+            value={range}
+            onChange={(event) => {
+              let data = getShoesByRange(event.target.min, event.target.value);
+              setProducts(data);
+              return setRange(event.target.value);
+            }}
+          />
         </div>
         <div
           style={{
@@ -118,28 +157,32 @@ const Filter = ({ products }) => {
               gridTemplateColumns: 'auto auto auto auto',
             }}
           >
-            {products[0] &&
-              products[0].sizes.map((item) => (
-                <button
-                  style={{
-                    border: '1px solid rgba(229, 231, 235, 1)',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    backgroundColor: 'rgba(249, 250, 251, 1)',
-                    color: 'rgba(75, 85, 99, 1)',
-                    fontWeight: '600',
-                    fontSize: '0.875rem',
-                    lineHeight: '1.25rem',
-                    textAlign: 'center',
-                    marginBottom: '0.5rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {item}
-                </button>
-              ))}
+            {getSizes().map((item) => (
+              <button
+                value={item}
+                onClick={(event) => {
+                  event.persist();
+                  setSizes((prev) => [...prev, event.target.value]);
+                }}
+                style={{
+                  border: '1px solid rgba(229, 231, 235, 1)',
+                  borderRadius: '8px',
+                  padding: '10px',
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  backgroundColor: 'rgba(249, 250, 251, 1)',
+                  color: 'rgba(75, 85, 99, 1)',
+                  fontWeight: '600',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.25rem',
+                  textAlign: 'center',
+                  marginBottom: '0.5rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </div>
       </div>

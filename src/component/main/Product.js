@@ -1,7 +1,6 @@
-import { getShoesByLowToHigh } from '../../services/apiservice';
 import ProductCard from './ProductCard';
 
-const Product = ({ products, setProducts }) => {
+const Product = ({ products, setQuery }) => {
   return (
     <>
       <div
@@ -39,16 +38,16 @@ const Product = ({ products, setProducts }) => {
               fontSize: '0.875rem',
             }}
             onChange={(event) => {
-              if (event.target.value === 'low to high') {
-                let data = getShoesByLowToHigh();
-                setProducts(data);
+              if (event.target.value === 'sort by price') {
+                setQuery('low');
+              } else if (event.target.value === 'all') {
+                setQuery('all');
               }
             }}
           >
-            <option value='low to high'>low to high</option>
-            <option value='lime'>high to low</option>
-            <option selected value='sort by price'>
-              Sort by price
+            <option value='sort by price'>Sort by price</option>
+            <option selected value='all'>
+              All
             </option>
           </select>
         </div>
@@ -59,7 +58,10 @@ const Product = ({ products, setProducts }) => {
             gridGap: '1.5rem 1.5rem',
           }}
         >
-          {products && products.map((product) => <ProductCard product={product} />)}
+          {products &&
+            products.map((product) => {
+              return <ProductCard product={product} />;
+            })}
         </div>
       </div>
     </>
