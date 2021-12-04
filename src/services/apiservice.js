@@ -1,6 +1,6 @@
 import { shoes } from '../database/mockdata';
 
-export const getShoes = (query = 'all') => {
+export const getShoes = (query = 'all', categories, min, max, sizes) => {
   if (query === 'all') {
     return shoes;
   }
@@ -12,6 +12,25 @@ export const getShoes = (query = 'all') => {
     let result = [...shoes].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     return result;
   }
+  if (query === 'apply three filters') {
+    return applyThreeLevelFilter(categories, min, max, sizes);
+  }
+};
+
+export const applyThreeLevelFilter = (categories, min, max, sizes) => {
+  let numericSize = sizes.map((s) => parseInt(s));
+  let result = [...shoes].filter((shoe) => {
+    if (
+      categories.includes(shoe.category) &&
+      numericSize.some((i) => shoe.sizes.includes(i)) &&
+      shoe.price >= min &&
+      shoe.price <= max
+    ) {
+      return shoe;
+    }
+  });
+
+  return result;
 };
 
 export const getShoesByRange = (min, max) => {

@@ -7,8 +7,12 @@ import { getShoes } from '../../services/apiservice';
 const Main = () => {
   const [query, setQuery] = useState('all');
   const [products, setProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [range, setRange] = useState('900');
+  const [minRange] = useState('300');
+  const [sizes, setSizes] = useState([]);
   useEffect(() => {
-    let data = getShoes(query);
+    let data = getShoes(query, category, minRange, range, sizes);
     setProducts(data);
   }, [query]);
 
@@ -41,8 +45,24 @@ const Main = () => {
               height: '100%',
             }}
           >
-            <Filter setProducts={(product) => setProducts(product)} />
-            <Product products={products} setQuery={(query) => setQuery(query)} />
+            <Filter
+              setQuery={(query) => {
+                return setQuery(query);
+              }}
+              category={category}
+              setCategory={setCategory}
+              sizes={sizes}
+              setSizes={setSizes}
+              range={range}
+              setRange={setRange}
+              minRange={minRange}
+            />
+            <Product
+              products={products}
+              setQuery={(query) => {
+                return setQuery(query);
+              }}
+            />
           </div>
         </div>
       </div>

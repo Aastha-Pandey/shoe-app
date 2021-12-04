@@ -1,30 +1,26 @@
 import { useEffect, useState } from 'react';
-import {
-  getCategory,
-  getShoesByCategory,
-  getShoesByRange,
-  getShoesBySize,
-  getSizes,
-} from '../../services/apiservice';
+import { getCategory, getSizes } from '../../services/apiservice';
 
-const Filter = ({ setProducts }) => {
-  const [sizes, setSizes] = useState([]);
+const Filter = ({
+  category,
+  setCategory,
+  sizes,
+  setSizes,
+  range,
+  setRange,
+  minRange,
+  setQuery,
+}) => {
   const [checked, setChecked] = useState(new Array(getCategory().length).fill(false));
-  const [category, setCategory] = useState([]);
-  const [range, setRange] = useState('900');
-  useEffect(() => {
-    if (category.length !== 0) {
-      let data = getShoesByCategory(category);
-      setProducts(data);
-    }
-  }, [category]);
+
+  const [applyAllClicked, setApplyAllClicked] = useState();
 
   useEffect(() => {
-    if (sizes.length !== 0) {
-      let data = getShoesBySize(sizes);
-      setProducts(data);
+    if (applyAllClicked && sizes.length !== 0 && category.length !== 0) {
+      setQuery('apply three filters');
+      setApplyAllClicked(false);
     }
-  }, [sizes]);
+  }, [applyAllClicked, category, sizes, minRange, range]);
 
   return (
     <>
@@ -43,6 +39,52 @@ const Filter = ({ setProducts }) => {
             borderBottom: '1px solid rgba(229, 231, 235, 1)',
           }}
         >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <button
+              style={{
+                borderBottom: '1px solid rgba(229, 231, 235, 1)',
+                paddingRight: '2.5rem',
+                paddingLeft: '2.5rem',
+                textAlign: 'center',
+                color: 'rgba(31, 41, 55, 1)',
+                fontWeight: '600',
+                fontSize: '1rem',
+                lineHeight: '1.5rem',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                setApplyAllClicked(true);
+              }}
+            >
+              Apply all
+            </button>
+            <button
+              style={{
+                borderBottom: '1px solid rgba(229, 231, 235, 1)',
+                paddingRight: '2.5rem',
+                paddingLeft: '2.5rem',
+                textAlign: 'center',
+                color: 'rgba(31, 41, 55, 1)',
+                fontWeight: '600',
+                fontSize: '1rem',
+                lineHeight: '1.5rem',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                setQuery('all');
+                setChecked(new Array(getCategory().length).fill(false));
+                sizes.length = 0;
+                category.length = 0;
+              }}
+            >
+              Clear all
+            </button>
+          </div>
           <h2
             style={{
               borderBottom: '1px solid rgba(229, 231, 235, 1)',
@@ -84,6 +126,13 @@ const Filter = ({ setProducts }) => {
 
                     if (result[index]) {
                       setCategory((category) => [...category, event.target.value]);
+                    } else {
+                      category.filter((item, i) => {
+                        if (item === event.target.value) {
+                          return category.splice(i, i + 1);
+                        }
+                      });
+                      setCategory([...category]);
                     }
                   }}
                   checked={checked[index]}
@@ -120,12 +169,10 @@ const Filter = ({ setProducts }) => {
 
           <input
             type='range'
-            min='300'
+            min={minRange}
             max='900'
             value={range}
             onChange={(event) => {
-              let data = getShoesByRange(event.target.min, event.target.value);
-              setProducts(data);
               return setRange(event.target.value);
             }}
           />
